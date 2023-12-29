@@ -1,0 +1,21 @@
+
+server:
+  port: 8087
+
+spring:
+  datasource:
+    url:  jdbc:postgresql://localhost:5432/ead-authuser
+    username: postgres
+    password: 159951
+#      cria as tabelas no banco automaticamentente
+  jpa:
+    hibernate:
+      ddl-auto: update
+      dialect: org.hibernate.dialect.PostgreSQLDialect
+#        nao exibe alguns erros de log do hibernate
+      jdbc:
+        lob.non-contextual-creation: true
+#        exibe os comandos SQLS do hibernte
+    properties:
+      hibernate:
+        show_sql: true
