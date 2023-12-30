@@ -2,6 +2,7 @@ package com.ead.authuser.dtos;
 
 import com.ead.authuser.enums.UserStatus;
 import com.ead.authuser.enums.UserType;
+import com.ead.authuser.validation.UsernameConstraint;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonView;
@@ -43,25 +44,26 @@ public class UserDto {
     //username so pode ser alterado no momento do cadastro
     @JsonView(UserView.RegistrationPost.class)
     @NotBlank(groups = UserView.RegistrationPost.class) //define qual grupo deve ser validado
-    @Size(min = 4, max = 50)
+    @Size(min = 4, max = 50, groups = UserView.RegistrationPost.class)
+    @UsernameConstraint(groups = UserView.RegistrationPost.class)
     private String username;
     //vincula a variavel email a interface RegistrationPost
     //email so pode ser alterado no momento do cadastro
     @JsonView(UserView.RegistrationPost.class)
     @NotBlank(groups = UserView.RegistrationPost.class) //define qual grupo deve ser validado
-    @Email
+    @Email(groups = UserView.RegistrationPost.class)
     private String email;
     @JsonView({UserView.RegistrationPost.class, UserView.PasswordPut.class})
     //vincula a variavel password a interface RegistrationPost
     //password  pode ser registrado no momento do cadastro e na atualizacao posterior
     @NotBlank(groups = {UserView.RegistrationPost.class, UserView.PasswordPut.class}) //define qual grupo deve ser validado
-    @Size(min = 6, max = 20)
+    @Size(min = 6, max = 20, groups = { UserView.RegistrationPost.class, UserView.PasswordPut.class})
     private String password;
     @JsonView({UserView.PasswordPut.class})
     //vincula a variavel oldPassword a interface RegistrationPost
     //oldPassword so pode ser alterado apos o cadastro
     @NotBlank(groups = UserView.PasswordPut.class) //define qual grupo deve ser validado
-    @Size(min = 6, max = 20)
+    @Size(min = 6, max = 20, groups = UserView.PasswordPut.class)
     private String oldPassword;
     @JsonView({UserView.RegistrationPost.class, UserView.UserPut.class})
     //vincula a variavel fullName a interface RegistrationPost
