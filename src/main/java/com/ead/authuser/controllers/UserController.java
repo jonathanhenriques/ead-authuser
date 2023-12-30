@@ -1,13 +1,17 @@
 package com.ead.authuser.controllers;
 
 
+import com.ead.authuser.dtos.UserDto;
 import com.ead.authuser.models.UserModel;
 import com.ead.authuser.services.UserService;
+import com.fasterxml.jackson.annotation.JsonView;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -25,7 +29,7 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(userService.findAll());
     }
 
-    @GetMapping("/{userId")
+    @GetMapping("/{userId}")
     public ResponseEntity<Object> getOneUser(@PathVariable(value = "userId") UUID userId) {
 
         Optional<UserModel> userModelOptional = userService.findById(userId);
@@ -42,7 +46,7 @@ public class UserController {
         }
     }
 
-    @DeleteMapping("/{userId")
+    @DeleteMapping("/{userId}")
     public ResponseEntity<Object> deleteUser(@PathVariable(value = "userId") UUID userId) {
         Optional<UserModel> userModelOptional = userService.findById(userId);
         if(!userModelOptional.isPresent()) {
@@ -50,7 +54,78 @@ public class UserController {
         }
         else {
             userService.delete(userModelOptional.get());
-            return ResponseEntity.status(HttpStatus.OK).body("User deleted success!");
+            return ResponseEntity.status(HttpStatus.OK).body("User deleted successfully!");
+        }
+
+    }
+
+
+    @PutMapping("/{userId}")
+    public ResponseEntity<Object> updateUser(@RequestBody @PathVariable(value = "userId") UUID userId,
+                                             //@JsonView faz o filtro dos campos do DTO utilizando as interfaces
+                                             //criadas em UserDto
+                                             @JsonView(UserDto.UserView.UserPut.class) UserDto userDto) {
+        Optional<UserModel> userModelOptional = userService.findById(userId);
+        if(!userModelOptional.isPresent()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
+        }
+        else {
+            var userModel = userModelOptional.get();
+            userModel.setFullName(userDto.getFullName());
+            userModel.setPhoneNumber(userDto.getPhoneNumber());
+            userModel.setCpf(userDto.getCpf());
+            userModel.setLastUpdateDate(LocalDateTime.now(ZoneId.of("UTC")));
+
+            userService.save(userModel);
+
+            return ResponseEntity.status(HttpStatus.OK).body(userModel);
+        }
+
+    }
+
+
+    @PutMapping("/{userId}/password")
+    public ResponseEntity<Object> updatePassword(@RequestBody @PathVariable(value = "userId") UUID userId,
+                                             //@JsonView faz o filtro dos campos do DTO utilizando as interfaces
+                                             //criadas em UserDto
+                                             @JsonView(UserDto.UserView.PasswordPut.class) UserDto userDto) {
+        Optional<UserModel> userModelOptional = userService.findById(userId);
+        if(!userModelOptional.isPresent()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
+        } if(!userModelOptional.get().getPassword().equals(userDto.getOldPassword())) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Error: Mismatched old password!");
+        }
+        else {
+            var userModel = userModelOptional.get();
+            userModel.setPassword(userDto.getPassword());
+            userModel.setLastUpdateDate(LocalDateTime.now(ZoneId.of("UTC")));
+
+            userService.save(userModel);
+
+            return ResponseEntity.status(HttpStatus.OK).body("Password updated sucessfully.");
+        }
+
+    }
+
+
+
+    @PutMapping("/{userId}/image")
+    public ResponseEntity<Object> updateImage(@RequestBody @PathVariable(value = "userId") UUID userId,
+                                                 //@JsonView faz o filtro dos campos do DTO utilizando as interfaces
+                                                 //criadas em UserDto
+                                                 @JsonView(UserDto.UserView.ImagePut.class) UserDto userDto) {
+        Optional<UserModel> userModelOptional = userService.findById(userId);
+        if(!userModelOptional.isPresent()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
+        }
+        else {
+            var userModel = userModelOptional.get();
+            userModel.setImageUrl(userDto.getImageUrl());
+            userModel.setLastUpdateDate(LocalDateTime.now(ZoneId.of("UTC")));
+
+            userService.save(userModel);
+
+            return ResponseEntity.status(HttpStatus.OK).body(userModel);
         }
 
     }

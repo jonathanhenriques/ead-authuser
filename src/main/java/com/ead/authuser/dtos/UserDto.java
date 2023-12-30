@@ -4,6 +4,7 @@ import com.ead.authuser.enums.UserStatus;
 import com.ead.authuser.enums.UserType;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonView;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -14,26 +15,57 @@ import java.util.UUID;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class UserDto {
 
-//    @Id
-//    @GeneratedValue(strategy = GenerationType.AUTO)
+
+    //interface criada para usar com o jsonView
+    //viabiliza o uso de apenas um DTO para tudo
+    public interface UserView {
+
+
+        //crud basico do usuario
+        public static interface RegistrationPost{}
+        //atualiza os dados basicos do usuario
+        public static interface UserPut {}
+        //atualizar a senha do usuario
+        public static interface PasswordPut {}
+        //atualizar a imagem do usuario
+        public static interface ImagePut {}
+
+    }
+
+
+
+
     private UUID userId;
-//    @Column define os campos na tabela do BD automaticamente
-//    @Column(nullable = false, unique = true, length = 50)
+    //vincula a variavel username a interface RegistrationPost
+    //username so pode ser alterado no momento do cadastro
+    @JsonView(UserView.RegistrationPost.class)
     private String username;
-//    @Column(nullable = false, unique = true, length = 50)
+    //vincula a variavel email a interface RegistrationPost
+    //email so pode ser alterado no momento do cadastro
+    @JsonView(UserView.RegistrationPost.class)
     private String email;
-//    @Column(nullable = false, unique = false, length = 255)
-//    @JsonIgnore nao mostra o campo no Json
-//    @JsonIgnore
+    @JsonView({UserView.RegistrationPost.class, UserView.PasswordPut.class})
+    //vincula a variavel password a interface RegistrationPost
+    //password  pode ser registrado no momento do cadastro e na atualizacao posterior
     private String password;
-//    @JsonIgnore
+    @JsonView(UserView.PasswordPut.class)
+    //vincula a variavel oldPassword a interface RegistrationPost
+    //oldPassword so pode ser alterado apos o cadastro
     private String oldPassword;
-//    @Column(nullable = false, unique = false, length = 150)
+    @JsonView({UserView.RegistrationPost.class, UserView.UserPut.class})
+    //vincula a variavel fullName a interface RegistrationPost
+    //fullName  pode ser registrado no momento do cadastro e na atualizacao posterior
     private String fullName;
-//    @Column(length = 20)
+    @JsonView({UserView.RegistrationPost.class, UserView.UserPut.class})
+    //vincula a variavel phoneNumber a interface RegistrationPost
+    //phoneNumber  pode ser registrado no momento do cadastro e na atualizacao posterior
     private String phoneNumber;
-//    @Column(length = 20)
+    @JsonView({UserView.RegistrationPost.class, UserView.UserPut.class})
+    //vincula a variavel cpf a interface RegistrationPost
+    //cpf  pode ser registrado no momento do cadastro e na atualizacao posterior
     private String cpf;
-//    @Column
+    @JsonView(UserView.ImagePut.class)
+    //vincula a variavel imageUrl a interface RegistrationPost
+    //imageUrl  pode ser registrada  na atualizacao posterior
     private String imageUrl;
 }
