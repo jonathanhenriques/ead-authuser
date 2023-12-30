@@ -8,6 +8,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -61,7 +62,10 @@ public class UserController {
 
 
     @PutMapping("/{userId}")
-    public ResponseEntity<Object> updateUser(@RequestBody @PathVariable(value = "userId") UUID userId,
+    public ResponseEntity<Object> updateUser(@Validated(UserDto.UserView.UserPut.class) //passamos a classe do Dto,
+                                                 // a interface de filtro do dto e interface de validacao
+                                            @RequestBody
+                                             @PathVariable(value = "userId") UUID userId,
                                              //@JsonView faz o filtro dos campos do DTO utilizando as interfaces
                                              //criadas em UserDto
                                              @JsonView(UserDto.UserView.UserPut.class) UserDto userDto) {
@@ -85,7 +89,10 @@ public class UserController {
 
 
     @PutMapping("/{userId}/password")
-    public ResponseEntity<Object> updatePassword(@RequestBody @PathVariable(value = "userId") UUID userId,
+    public ResponseEntity<Object> updatePassword(@Validated(UserDto.UserView.PasswordPut.class) //passamos a classe do Dto,
+                                                     // a interface de filtro do dto e interface de validacao
+                                                @RequestBody
+                                                 @PathVariable(value = "userId") UUID userId,
                                              //@JsonView faz o filtro dos campos do DTO utilizando as interfaces
                                              //criadas em UserDto
                                              @JsonView(UserDto.UserView.PasswordPut.class) UserDto userDto) {
@@ -110,7 +117,10 @@ public class UserController {
 
 
     @PutMapping("/{userId}/image")
-    public ResponseEntity<Object> updateImage(@RequestBody @PathVariable(value = "userId") UUID userId,
+    public ResponseEntity<Object> updateImage(@Validated(UserDto.UserView.ImagePut.class) //passamos a classe do Dto,
+                                                  // a interface de filtro do dto e interface de validacao
+                                                @RequestBody
+                                                @PathVariable(value = "userId") UUID userId,
                                                  //@JsonView faz o filtro dos campos do DTO utilizando as interfaces
                                                  //criadas em UserDto
                                                  @JsonView(UserDto.UserView.ImagePut.class) UserDto userDto) {

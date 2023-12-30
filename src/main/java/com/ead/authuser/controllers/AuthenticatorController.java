@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -26,7 +27,9 @@ public class AuthenticatorController {
 
 
     @PostMapping("/signup")
-    public ResponseEntity<Object> registerUser(@RequestBody
+    public ResponseEntity<Object> registerUser(@Validated(UserDto.UserView.RegistrationPost.class) //passamos a classe do Dto,
+                                                   // a interface de filtro do dto e interface de validacao
+                                                @RequestBody
                                                    //@JsonView faz o filtro dos campos do DTO utilizando as interfaces
                                                     //criadas em UserDto
                                                    @JsonView(UserDto.UserView.RegistrationPost.class) UserDto userDto) {
